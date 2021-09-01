@@ -24,9 +24,19 @@ async function getShowsByTerm(term) {
   // Use Axios.get and then some query terms from the search
   // Return an array of show objects
   const response = await axios.get(TV_MAZE_SHOWS_URL, { params: { q: term } });
-  console.log("response:", response);
-  console.log("response.data:", response.data);
-  return response.data;
+  // console.log("response:", response);
+  // console.log("response.data:", response.data);
+  let arrayOfShows = [];
+  for (let scoreAndShow of response.data) {
+    let { id, name, summary, image } = scoreAndShow.show;
+    // console.log("in loop destructured response=",{ id, name, summary, image });
+    image = image === null ? BROKEN_IMG_URL : image.medium;
+    arrayOfShows.push({ id, name, summary, image });
+  }
+
+  // console.log("arrayOfShows=",arrayOfShows);
+  // console.log("destructured response=",response.data);
+  return arrayOfShows;
 }
 
 
@@ -36,27 +46,17 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
-    let showImageUrl;
-    
-    showImageUrl = show.show.image === null ? BROKEN_IMG_URL : show.show.image.original;
-    
-    // if (show.show.image === null) {
-    //   showImageUrl = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
-    // }
-    // else {
-    //   showImageUrl = show.show.image.original;
-    // }
 
     const $show = $(
-      `<div data-show-id="${show.show.id}" class="Show col-md-12 col-lg-6 mb-4">
+      `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src= "${showImageUrl}";
-              alt="${show.show.name}" ;
+              src= "${show.image}";
+              alt="${show.name}" ;
               class="w-25 mr-3">
            <div class="media-body">
-             <h5 class="text-primary">${show.show.name}</h5>
-             <div><small>${show.show.summary}</small></div>
+             <h5 class="text-primary">${show.name}</h5>
+             <div><small>${show.summary}</small></div>
              <button class="btn btn-outline-light btn-sm Show-getEpisodes">
                Episodes
              </button>
