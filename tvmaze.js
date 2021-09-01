@@ -7,7 +7,7 @@ const TV_MAZE_SHOWS_URL = "http://api.tvmaze.com/search/shows";
 const BROKEN_IMG_URL = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
 
 // This needs to be put somewhere else and updated with string interpolation
-// const TV_MAZE_EPISODES_URL = "http://api.tvmaze.com/shows/%5Bshowid%5D/episodes"
+const TV_MAZE_EPISODES_URL = "http://api.tvmaze.com/shows/";
 
 
 
@@ -78,7 +78,7 @@ async function searchForShowAndDisplay() {
   const term = $("#searchForm-term").val();
   const shows = await getShowsByTerm(term);
 
-  // $episodesArea.hide();
+  $episodesArea.hide();
   populateShows(shows);
 }
 
@@ -92,8 +92,34 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) {
+  const response = await axios.get(`${TV_MAZE_EPISODES_URL}${id}/episodes`);
+  // console.log("episodes:", response);
 
-/** Write a clear docstring for this function... */
+  let episodes = [];
+  for (let episode of response.data) {
+    let { id, name, season, number } = episode;
+    episodes.push({ id, name, season, number });
+  }
+  // const shortenedEpisodes = response.data.map(function(episode) {
+  //   return { id, name, season, number} = episode;
+  // })
+  return episodes;
+}
 
-// function populateEpisodes(episodes) { }
+/** A function that is provided an array of episodes information and
+ *  populates that into the #episodesList section of the DOM
+ */
+
+function populateEpisodes(episodes) {
+  // create a loop to go through each of the episodes
+  for (let episode of episodes) {
+    let newEpisode = $("<li>")
+      .attr("episode-id", `${episode.id}`)
+      .text(`${episode.name} (Season: ${episode.season}, Number: ${episode.number})`);
+    $("#episodesList").append(newEpisode);
+
+    $episodesArea.show();
+
+  }
+}
