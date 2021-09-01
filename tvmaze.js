@@ -4,6 +4,7 @@ const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
 const TV_MAZE_SHOWS_URL = "http://api.tvmaze.com/search/shows";
+const BROKEN_IMG_URL = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
 
 // This needs to be put somewhere else and updated with string interpolation
 // const TV_MAZE_EPISODES_URL = "http://api.tvmaze.com/shows/%5Bshowid%5D/episodes"
@@ -18,6 +19,7 @@ const TV_MAZE_SHOWS_URL = "http://api.tvmaze.com/search/shows";
  */
 
 async function getShowsByTerm(term) {
+  //Pseudo-code: 
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   // Use Axios.get and then some query terms from the search
   // Return an array of show objects
@@ -35,12 +37,15 @@ function populateShows(shows) {
 
   for (let show of shows) {
     let showImageUrl;
-    if (show.show.image === null) {
-      showImageUrl = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
-    }
-    else {
-      showImageUrl = show.show.image.original;
-    }
+    
+    showImageUrl = show.show.image === null ? BROKEN_IMG_URL : show.show.image.original;
+    
+    // if (show.show.image === null) {
+    //   showImageUrl = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
+    // }
+    // else {
+    //   showImageUrl = show.show.image.original;
+    // }
 
     const $show = $(
       `<div data-show-id="${show.show.id}" class="Show col-md-12 col-lg-6 mb-4">
