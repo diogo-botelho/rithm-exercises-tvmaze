@@ -26,17 +26,17 @@ async function getShowsByTerm(term) {
   const response = await axios.get(TV_MAZE_SHOWS_URL, { params: { q: term } });
   // console.log("response:", response);
   // console.log("response.data:", response.data);
-  let arrayOfShows = [];
+  let shows = [];
   for (let scoreAndShow of response.data) {
     let { id, name, summary, image } = scoreAndShow.show;
     // console.log("in loop destructured response=",{ id, name, summary, image });
     image = image === null ? BROKEN_IMG_URL : image.medium;
-    arrayOfShows.push({ id, name, summary, image });
+    shows.push({ id, name, summary, image });
   }
 
-  // console.log("arrayOfShows=",arrayOfShows);
+  // console.log("shows=",shows);
   // console.log("destructured response=",response.data);
-  return arrayOfShows;
+  return shows;
 }
 
 
@@ -51,8 +51,8 @@ function populateShows(shows) {
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img 
-              src= "${show.image}";
-              alt="${show.name}" ;
+              src="${show.image}"
+              alt="${show.name}" 
               class="w-25 mr-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
