@@ -57,7 +57,7 @@ function populateShows(shows) {
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
              <div><small>${show.summary}</small></div>
-             <button class="btn btn-outline-light btn-sm Show-getEpisodes">
+             <button class="btn btn-outline-light btn-sm Show-getEpisodes episode-button">
                Episodes
              </button>
            </div>
@@ -87,15 +87,16 @@ $searchForm.on("submit", async function (evt) {
   await searchForShowAndDisplay();
 });
 
+$showsList.on("click", ".episode-button", handleEpisodesClick);
 
 /** Given a show ID, get from API and return (promise) array of episodes:
  *      { id, name, season, number }
  */
 
 async function getEpisodesOfShow(id) {
+  console.log("id=",id);
   const response = await axios.get(`${TV_MAZE_EPISODES_URL}${id}/episodes`);
   // console.log("episodes:", response);
-
   let episodes = [];
   for (let episode of response.data) {
     let { id, name, season, number } = episode;
@@ -112,14 +113,25 @@ async function getEpisodesOfShow(id) {
  */
 
 function populateEpisodes(episodes) {
+  $("#episodesList").empty();
+  //console.log("populateEpisodes ran;")
   // create a loop to go through each of the episodes
   for (let episode of episodes) {
     let newEpisode = $("<li>")
       .attr("episode-id", `${episode.id}`)
       .text(`${episode.name} (Season: ${episode.season}, Number: ${episode.number})`);
     $("#episodesList").append(newEpisode);
-
-    $episodesArea.show();
-
   }
+    $episodesArea.show();
+}
+
+/** Handles the click on the Episodes button, runs the populateEpisodes for the respective show */
+async function handleEpisodesClick(evt) {
+  //console.log("handleEpisodesClick ran.");
+  const showId = $(evt.target)
+    .closest(".Show")
+    .attr("data-show-id");
+  //console.log("showId=",showId);
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
 }
